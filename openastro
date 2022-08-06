@@ -25,7 +25,7 @@ from shutil import copyfile
 
 #pysqlite
 import sqlite3
-sqlite3.dbapi2.register_adapter(str, lambda s:s.decode('utf-8'))
+#sqlite3.dbapi2.register_adapter(str, lambda s:s.decode('utf-8')) not needed in python3
 
 #template processing
 from string import Template
@@ -48,7 +48,7 @@ from openastromod import zonetab, geoname, importfile, dignities, swiss as ephem
 #debug
 LOCAL=False
 DEBUG=False
-VERSION='1.1.57'
+VERSION='1.1.59'
 
 #directories
 if LOCAL:
@@ -1890,7 +1890,7 @@ class openAstroInstance:
 				else:
 					t_text_offset = t_offset + int(self.degreeDiff( self.t_houses_degree_ut[0], self.t_houses_degree_ut[11] ) / 2 )
 				#linecolor
-				if i is 0 or i is 9 or i is 6 or i is 3:
+				if i == 0 or i == 9 or i == 6 or i == 3:
 					t_linecolor=linecolor
 				else:
 					t_linecolor = self.colors['houses_transit_line']			
@@ -2109,7 +2109,7 @@ class openAstroInstance:
 			else:
 				scale=1
 			#output planet			
-			output = output + '<g transform="translate(-'+str(12*scale)+',-'+str(12*scale)+')"><g transform="scale('+str(scale)+')"><use x="' + str(planet_x*(1/scale)) + '" y="' + str(planet_y*(1/scale)) + '" xlink:href="#' + self.planets[i]['name'] + '" /></g></g>\n'
+			output = output + '<g transform="translate(-'+str(12*scale)+',-'+str(12*scale)+')"><g transform="scale('+str(scale)+')"><use x="' + str(planet_x*(1/scale)) + '" y="' + str(planet_y*(1/scale)) + '" xlink:href="#' + self.svgSafeHref(self.planets[i]['name']) + '" /></g></g>\n'
 			
 		#make transit degut and display planets
 		if self.type == "Transit":
@@ -2179,7 +2179,7 @@ class openAstroInstance:
 					t_offset = t_offset - 360
 				planet_x = self.sliceToX( 0 , (r-rplanet) , t_offset ) + rplanet
 				planet_y = self.sliceToY( 0 , (r-rplanet) , t_offset ) + rplanet
-				output = output + '<g transform="translate(-6,-6)"><g transform="scale(0.5)"><use x="' + str(planet_x*2) + '" y="' + str(planet_y*2) + '" xlink:href="#' + self.planets[i]['name'] + '" /></g></g>\n'
+				output = output + '<g transform="translate(-6,-6)"><g transform="scale(0.5)"><use x="' + str(planet_x*2) + '" y="' + str(planet_y*2) + '" xlink:href="#' + self.svgSafeHref(self.planets[i]['name']) + '" /></g></g>\n'
 				#transit planet line
 				x1 = self.sliceToX( 0 , r+3 , t_offset ) - 3
 				y1 = self.sliceToY( 0 , r+3 , t_offset ) - 3
@@ -2369,17 +2369,17 @@ class openAstroInstance:
 				#first planet symbol
 				out += '<g transform="translate(20,%s)">' % (y)
 				out += '<use transform="scale(0.4)" x="0" y="-20" xlink:href="#%s" /></g>\n' % (
-					self.planets[yot[k][0]]['name'])
+					self.svgSafeHref(self.planets[yot[k][0]]['name']))
 				
 				#second planet symbol
 				out += '<g transform="translate(30,%s)">'  % (y)
 				out += '<use transform="scale(0.4)" x="0" y="-20" xlink:href="#%s" /></g>\n' % (
-					self.planets[yot[k][1]]['name'])
+					self.svgSafeHref(self.planets[yot[k][1]]['name']))
 
 				#third planet symbol
 				out += '<g transform="translate(40,%s)">'  % (y)
 				out += '<use transform="scale(0.4)" x="0" y="-20" xlink:href="#%s" /></g>\n' % (
-					self.planets[yot[k][2]]['name'])
+					self.svgSafeHref(self.planets[yot[k][2]]['name']))
 				
 				y=y+14
 		#finalize
@@ -2454,7 +2454,7 @@ class openAstroInstance:
 			#second planet symbol
 			out += '<g transform="translate(30,0)">'
 			out += '<use transform="scale(0.4)" x="0" y="3" xlink:href="#%s" />\n' % (
-				self.planets[self.atgrid[i]['p1']]['name'])
+				self.svgSafeHref(self.planets[self.atgrid[i]['p1']]['name']))
 			out += '</g>'
 			#difference in degrees
 			out += '<text y="8" x="45" style="fill:%s; font-size: 10px;">%s</text>' % (
@@ -2479,7 +2479,7 @@ class openAstroInstance:
 				start=self.planets_degree_ut[a]
 				#first planet 
 				out = out + '<rect x="'+str(xindent)+'" y="'+str(yindent)+'" width="'+str(box)+'" height="'+str(box)+'" style="'+style+'"/>\n'
-				out = out + '<use transform="scale(0.4)" x="'+str((xindent+2)*2.5)+'" y="'+str((yindent+1)*2.5)+'" xlink:href="#'+self.planets[a]['name']+'" />\n'
+				out = out + '<use transform="scale(0.4)" x="'+str((xindent+2)*2.5)+'" y="'+str((yindent+1)*2.5)+'" xlink:href="#'+self.svgSafeHref(self.planets[a]['name'])+'" />\n'
 				xindent = xindent + box
 				yindent = yindent - box
 				revr2=list(range(a))
@@ -2526,7 +2526,7 @@ class openAstroInstance:
 				#planet text
 				out = out + '<text text-anchor="end" style="fill:%s; font-size: 10px;">%s</text>' % (self.colors['paper_0'],self.planets[i]['label'])
 				#planet symbol
-				out = out + '<g transform="translate(5,-8)"><use transform="scale(0.4)" xlink:href="#'+self.planets[i]['name']+'" /></g>'								
+				out = out + '<g transform="translate(5,-8)"><use transform="scale(0.4)" xlink:href="#'+self.svgSafeHref(self.planets[i]['name'])+'" /></g>'								
 				#planet degree				
 				out = out + '<text text-anchor="start" x="19" style="fill:%s; font-size: 10px;">%s</text>' % (self.colors['paper_0'],self.dec2deg(self.planets_degree[i]))
 				#zodiac
@@ -2815,6 +2815,10 @@ class openAstroInstance:
 		dprint('importZet8: database with %s entries: %s' % (len(data),filename))
 		f.close()
 		return
+
+	def svgSafeHref(self, name):
+		name=name.replace(' ','_')
+		return name
 		
 ##############
 # MAIN CLASS #
@@ -3516,13 +3520,13 @@ class mainWindow:
 						dx[skipdays[s]+1]-5,y-1,dx[skipdays[s+1]]+15,y-1,openAstro.colors['paper_0'])
 			#outer planet
 			out += '<g transform="translate(0,%s)"><g transform="scale(.5)"><use x="0" y="0" xlink:href="#%s" /></g></g>\n'%(
-				y,openAstro.planets[x]['name'])
+				y,openAstro.svgSafeHref(openAstro.planets[x]['name']))
 			#aspect
 			out += '<g><use x="20" y="%s" xlink:href="#orb%s" /></g>\n'%(
 				y,openAstro.aspects[z]['degree'])			
 			#inner planet
 			out += '<g transform="translate(40,%s)"><g transform="scale(.5)"><use x="0" y="0" xlink:href="#%s" /></g></g>\n'%(y,
-				openAstro.planets[i]['name'])		
+				openAstro.svgSafeHref(openAstro.planets[i]['name']))		
 			for d in range(delta.days):					
 				if d in atgrid[keys[m]]:
 					orb = atgrid[keys[m]][d]
@@ -4811,11 +4815,11 @@ class mainWindow:
 			table.attach(data[-1]['degree_str'], 1, 2, x, x+1, xoptions=Gtk.AttachOptions.FILL, xpadding=10)
 			table.attach(data[-1]['name'], 2, 3, x, x+1, xoptions=Gtk.AttachOptions.FILL, xpadding=10)
 			data[-1]['visible'] = Gtk.CheckButton()
-			if openAstro.aspects[i]['visible'] is 1:
+			if openAstro.aspects[i]['visible'] == 1:
 				data[-1]['visible'].set_active(True)
 			table.attach(data[-1]['visible'], 3, 4, x, x+1, xoptions=Gtk.AttachOptions.EXPAND, xpadding=2, ypadding=2)
 			data[-1]['visible_grid'] = Gtk.CheckButton()
-			if openAstro.aspects[i]['visible_grid'] is 1:
+			if openAstro.aspects[i]['visible_grid'] == 1:
 				data[-1]['visible_grid'].set_active(True)
 			table.attach(data[-1]['visible_grid'], 4, 5, x, x+1, xoptions=Gtk.AttachOptions.EXPAND, xpadding=2, ypadding=2)
 			data[-1]['orb'] = Gtk.Entry()
@@ -4920,13 +4924,13 @@ class mainWindow:
 			#planets to skip: 11=true node, 13=osc. apogee, 14=earth, 21=intp. apogee, 22=intp. perigee
 			#angles: 23=Asc, 24=Mc, 25=Ds, 26=Ic
 			#points: 27=pars fortuna
-			if i is 11 or i is 13 or i is 14 or i is 21 or i is 22:
+			if i == 11 or i == 13 or i == 14 or i == 21 or i == 22:
 				continue
 			#start of the angles			
-			if i is 23 or i is 27:
+			if i == 23 or i == 27:
 				table.set_row_spacing(x-1,20)
 				table.set_row_spacing(x,8)
-				if i is 27:
+				if i == 27:
 					label = Gtk.Label(_("Point Label"))
 				else:
 					label = Gtk.Label(_("Angle Label"))	
@@ -4947,17 +4951,17 @@ class mainWindow:
 			#data[-1]['label'].set_alignment(xalign=0.0, yalign=0.5)
 			table.attach(data[-1]['label'], 0, 1, x, x+1, xoptions=Gtk.AttachOptions.SHRINK, xpadding=10)
 			data[-1]['visible'] = Gtk.CheckButton()
-			if openAstro.planets[i]['visible'] is 1:
+			if openAstro.planets[i]['visible'] == 1:
 				data[-1]['visible'].set_active(True)
 			table.attach(data[-1]['visible'], 1, 2, x, x+1, xoptions=Gtk.AttachOptions.SHRINK, xpadding=2, ypadding=2)
 			
 			data[-1]['visible_aspect_line'] = Gtk.CheckButton()
-			if openAstro.planets[i]['visible_aspect_line'] is 1:
+			if openAstro.planets[i]['visible_aspect_line'] == 1:
 				data[-1]['visible_aspect_line'].set_active(True)
 			table.attach(data[-1]['visible_aspect_line'], 2, 3, x, x+1, xoptions=Gtk.AttachOptions.SHRINK, xpadding=2, ypadding=2)	
 			
 			data[-1]['visible_aspect_grid'] = Gtk.CheckButton()
-			if openAstro.planets[i]['visible_aspect_grid'] is 1:
+			if openAstro.planets[i]['visible_aspect_grid'] == 1:
 				data[-1]['visible_aspect_grid'].set_active(True)
 			table.attach(data[-1]['visible_aspect_grid'], 3, 4, x, x+1, xoptions=Gtk.AttachOptions.SHRINK, xpadding=2, ypadding=2)	
 			x=x+1

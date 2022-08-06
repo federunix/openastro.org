@@ -335,7 +335,7 @@ class ephData:
 		sunstep=[0,30,40,50,60,70,80,90,120,130,140,150,160,170,180,210,220,230,240,250,260,270,300,310,320,330,340,350]
 		for x in range(len(sunstep)):
 			low=sunstep[x]
-			if x is 27: high=360
+			if x == 27: high=360
 			else: high=sunstep[x+1]
 			if ddeg >= low and ddeg < high: sphase=x+1
 		self.lunar_phase={
