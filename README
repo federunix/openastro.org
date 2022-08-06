@@ -13,3 +13,36 @@ dependencies:
   imagemagick /* export features */
   pyswisseph /* http://pyswisseph.atarax.org/ */
   openastro.org-data
+
+Generic Linux Installation
+You can also manually build openastro.org, the pyswisseph module and the ephemeris files.
+
+Make sure you can get these dependencies satisfied to run the program:
+
+python3-dateutil
+gir1.2-rsvg-2.0
+gir1.2-gtk-3.0
+python3-tz
+python3-dev
+python3-cairo
+imagemagick
+librsvg2-bin
+curl -L "http://www.openastro.org/download.php?file=source&type;=python3-swisseph" | tar xz
+
+cd python3-swisseph-2.00.00 && sudo python3 setup.py install
+
+curl -L "http://www.openastro.org/download.php?file=source&type;=openastro" | tar xz
+
+cd openastro.org-1.1.57 && sudo python3 setup.py install --prefix=/usr
+
+curl -L "http://www.openastro.org/download.php?file=source&type;=data" | tar xz
+
+cd openastro.org-data-1.9 && sudo python3 setup.py install --prefix=/usr
+To run the program type "openastro" in a terminal
+
+There seem to be issues with the python path when using a python 2.7 version. Try running (in a terminal):
+
+export PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages:/usr/lib/python2.7/site-packages"
+
+openastro
+
